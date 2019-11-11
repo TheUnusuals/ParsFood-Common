@@ -23,7 +23,7 @@ export function setFirestore(firestore: firestore.Firestore) {
     database = firestore;
 }
 
-export function getFirestore(): firestore.Firestore {
+export function getFirestore(): firestore.Firestore | undefined {
     return database;
 }
 
