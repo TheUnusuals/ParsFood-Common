@@ -9,8 +9,8 @@ import {
     Payload,
     Store
 } from "vuex";
-import {createNonEnumerableProxy, getProxyId, isProxy, isProxyWithoutTarget} from "@/js/proxy";
-import {getAllPropertyKeys, getProperty, randomString, setProperty} from "@/js/utils";
+import {createNonEnumerableProxy, getProxyId, isProxy, isProxyWithoutTarget} from "../../js/proxy";
+import {getAllPropertyKeys, getProperty, randomString, setProperty} from "../../js/utils";
 
 const symbols = {
     state: Symbol("state"),
@@ -246,7 +246,7 @@ export abstract class VuexModule<State = any, RootState = any> {
                 this.store.subscribe((mutation, state) => {
                     let mutationPrefix = this.module.namespaced ? this.namespacePrefix : "";
                     let unprefixedMutation = mutation.type.substring(mutationPrefix.length);
-                    let mutationFunc = this.module.mutations![unprefixedMutation];
+                    let mutationFunc: any = this.module.mutations![unprefixedMutation];
 
                     if (mutationFunc) {
                         this.initProxyObjects();

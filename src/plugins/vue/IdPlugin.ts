@@ -1,5 +1,19 @@
 import Vue, {VueConstructor} from "vue";
-import {randomString} from "@/js/utils";
+import {randomString} from "../../js/utils";
+
+declare module "vue/types/vue" {
+    interface Vue {
+        $componentId?: string;
+
+        $id(field?: string): string;
+    }
+}
+
+declare module "vue/types/options" {
+    interface ComponentOptions<V extends Vue> {
+        componentId?: string | true;
+    }
+}
 
 export default class IdPlugin {
     private componentIds: Map<string, number> = new Map();
