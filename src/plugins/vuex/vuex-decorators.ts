@@ -220,6 +220,9 @@ export abstract class VuexModule<State = any, RootState = any> {
     protected constructor() {
     }
 
+    init() {
+    }
+
     protected initVuexModule(this: VuexModule<State, RootState> & { [key: string]: any }) {
         if (this._vuexModuleInitialized) return;
         this._vuexModuleInitialized = true;
@@ -388,7 +391,7 @@ export abstract class VuexModule<State = any, RootState = any> {
 }
 
 function unwrapStateRecursively(obj: any, namespace: string | undefined, modules: VuexModule[]): any {
-    if (["object", "function"].includes(typeof obj)) {
+    if (["object", "function"].includes(typeof obj) && obj !== null) {
         let vuexModule: VuexModule | undefined = obj[symbols.vuexModule];
 
         if (vuexModule) {
@@ -419,11 +422,12 @@ function unwrapStateRecursively(obj: any, namespace: string | undefined, modules
     return obj;
 }
 
-export default function VuexDecoratorsPlugin(store: Store<any>) {
+export default async function VuexDecoratorsPlugin(store: Store<any>) {
+    let modules: VuexModule[] = [];
+
     let unwrapStateModule: Module<any, any> = {
         mutations: {
             __VuexModule_unwrapState() {
-                let modules: VuexModule[] = [];
                 let unwrappedState = unwrapStateRecursively(store.state, undefined, modules);
                 store.replaceState(unwrappedState);
             }
@@ -440,5 +444,9 @@ export default function VuexDecoratorsPlugin(store: Store<any>) {
 
     store.unregisterModule(unwrapStateModuleId);
 
-    store.dispatch(initModuleAction, store);
+    await store.dispatch(initModuleAction, store);
+
+    for (let module of modules) {
+        module.init();
+    }
 }
