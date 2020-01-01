@@ -41,6 +41,12 @@ function normalizeFirestoreObjectOptions(options: FirestoreObjectOptions): Norma
 }
 
 async function loadDocument<T extends DatabaseDocumentWithId>(documentSnapshot: firestore.DocumentSnapshot, options: NormalizedFirestoreObjectOptions, db: firestore.Firestore = database): Promise<T> {
+    if (!documentSnapshot.exists) throw {
+        code: "not-found",
+        message: "The requested document does not exist.",
+        name: `${options.collectionPath}/${documentSnapshot.id}`
+    } as firestore.FirestoreError;
+
     let document: T = {
         id: documentSnapshot.id,
         ...documentSnapshot.data()
