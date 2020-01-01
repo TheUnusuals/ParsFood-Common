@@ -1,4 +1,4 @@
-import {functions, firestore} from "firebase";
+import {functions, firestore} from "firebase/app";
 
 export function isHttpsError(error: any): error is functions.HttpsError {
     return error instanceof Object && error.code != null && error.message != null;
