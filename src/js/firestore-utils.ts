@@ -40,6 +40,40 @@ function normalizeFirestoreObjectOptions(options: FirestoreObjectOptions): Norma
     } as NormalizedFirestoreObjectOptions;
 }
 
+export interface DocumentOrRefMatch<T extends DatabaseDocumentWithId> {
+    id: string;
+    document: T | null;
+    ref: firestore.DocumentReference<T> | null;
+}
+
+export interface DocumentRefMatch<T extends DatabaseDocumentWithId> {
+    id: string;
+    document: T;
+    ref: firestore.DocumentReference<T> | null;
+}
+
+export function matchDocumentsWithRefs<T extends DatabaseDocumentWithId>(documents: T[], refs: firestore.DocumentReference<T>[]): DocumentRefMatch<T>[] {
+    return documents.map(document => ({
+        id: document.id,
+        document: document,
+        ref: refs.find(ref => ref.id === document.id) || null
+    }));
+}
+
+export interface RefDocumentMatch<T extends DatabaseDocumentWithId> {
+    id: string;
+    ref: firestore.DocumentReference<T>;
+    document: T | null;
+}
+
+export function matchRefsWithDocuments<T extends DatabaseDocumentWithId>(refs: firestore.DocumentReference<T>[], documents: T[]): RefDocumentMatch<T>[] {
+    return refs.map(ref => ({
+        id: ref.id,
+        ref: ref,
+        document: documents.find(document => document.id === ref.id) || null
+    }));
+}
+
 async function loadDocument<T extends DatabaseDocumentWithId>(documentSnapshot: firestore.DocumentSnapshot, options: NormalizedFirestoreObjectOptions, db: firestore.Firestore = database): Promise<T> {
     if (!documentSnapshot.exists) throw {
         code: "not-found",
