@@ -10,7 +10,7 @@ export type FirestoreObjectOptions = string | {
     subcollections?: FirestoreObjectOptions[];
 }
 
-type NormalizedFirestoreObjectOptions = {
+export type NormalizedFirestoreObjectOptions = {
     collectionPath: string;
     name: string;
     query?: (collection: firestore.CollectionReference) => firestore.Query;
@@ -27,7 +27,7 @@ export function getFirestore(): firestore.Firestore | undefined {
     return database;
 }
 
-function normalizeFirestoreObjectOptions(options: FirestoreObjectOptions): NormalizedFirestoreObjectOptions {
+export function normalizeFirestoreObjectOptions(options: FirestoreObjectOptions): NormalizedFirestoreObjectOptions {
     if ((options as any).__normalized) return options as NormalizedFirestoreObjectOptions;
 
     return {
@@ -40,11 +40,7 @@ function normalizeFirestoreObjectOptions(options: FirestoreObjectOptions): Norma
     } as NormalizedFirestoreObjectOptions;
 }
 
-export interface DocumentOrRefMatch<T extends DatabaseDocumentWithId> {
-    id: string;
-    document: T | null;
-    ref: firestore.DocumentReference<T> | null;
-}
+export type DocumentOrRefMatch<T extends DatabaseDocumentWithId> = DocumentRefMatch<T> | RefDocumentMatch<T>;
 
 export interface DocumentRefMatch<T extends DatabaseDocumentWithId> {
     id: string;
